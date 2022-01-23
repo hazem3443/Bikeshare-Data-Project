@@ -25,7 +25,7 @@
 ## Technologies Used
 
 - Python  - version 3.9.7 :school:
-- Jupyter - version 4.9.1 
+- Jupyter - version 4.9.1
 
 ## Features
 
