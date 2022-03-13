@@ -20,8 +20,12 @@ def get_filters():
     """
     print('Hello! Let\'s explore some US bikeshare data!')
     # get user input for city (chicago, new york city, washington). HINT: Use a while loop to handle invalid inputs
-    city = input(
-        "Would you like to see data for Chicago, New York, or Washington?\n")
+
+    city = ""
+    while city.lower() not in ["chicago", "new york", "washington"]:
+        city = input(
+            "Would you like to see data for Chicago, New York, or Washington?\n")
+
     month = 'all'
     day = 'all'
 
@@ -34,14 +38,20 @@ def get_filters():
     if choice in ["month", "both"]:
         months_dict = {month: index for index,
                        month in enumerate(calendar.month_name) if month}
-        month_str = input(
-            "Which month? January, February, March, April, May or June?\n")
+
+        month_str = ""
+        while month_str.lower() not in ["january", "february", "march", "april", "May", "June", "all"]:
+            month_str = input(
+                "Which month? January, February, March, April, May or June?\n")
         if month_str != "all":
             month = months_dict[month_str]
     # get user input for day of week (all, monday, tuesday, ... sunday)
     if choice in ["day", "both"]:
-        day = (input(
-            "Which day? Please type response as an integer(e.g., 1=Sunday, 2=Monday ...).\n"))
+        day = ""
+
+        while day.lower() not in ["1", "2", "3", "4", "5", "6", "7", "all"]:
+            day = (input(
+                "Which day? Please type response as an integer(e.g., 1=Sunday, 2=Monday ...).\n"))
 
     print('-'*80)
     return city, month, day
@@ -236,6 +246,52 @@ def date_time_destructor(time_in_secs):
     return (days, hours, minutes, seconds)
 
 
+def individual_stat(df):
+    indvidual_trip_inc = 0
+
+    df.rename({"Unnamed: 0": ""}, axis=1, inplace=True)
+    df.reset_index(drop=True, inplace=True)
+
+    indvidual_trip_str = ""
+    while indvidual_trip_str.lower() not in ["yes", "no"]:
+        indvidual_trip_str = input(
+            '\nWould you like to view individual trip data?Type "yes" or "no".\n')
+        if indvidual_trip_str.lower() == 'no':
+            indvidual_trip_str = ""
+            break
+
+        dummy_flag = 0
+        if "Gender" not in df.columns:
+            dummy_flag = 1
+        if "Birth Year" not in df.columns:
+            dummy_flag = 1
+
+        if dummy_flag:
+            print(df[['',
+                  'End Station',
+                      'End Time',
+                      'Start Station',
+                      'Start Time',
+                      'Trip Duration',
+                      'User Type']].loc[indvidual_trip_inc:indvidual_trip_inc+1].to_dict('records')[0])
+        else:
+            print(df[['',
+                  'Birth Year',
+                      'End Station',
+                      'End Time',
+                      'Gender',
+                      'Start Station',
+                      'Start Time',
+                      'Trip Duration',
+                      'User Type']].loc[indvidual_trip_inc:indvidual_trip_inc+1].to_dict('records')[0])
+
+        indvidual_trip_inc += 1
+
+        if indvidual_trip_str.lower() == 'yes':
+            indvidual_trip_str = ""
+            continue
+
+
 def main():
     """main loop for running or application"""
     while True:
@@ -249,10 +305,18 @@ def main():
         trip_duration_stats(df)
         user_stats(df)
 
+        individual_stat(df)
+
         restart = input('\nWould you like to restart? Enter yes or no.\n')
-        if restart.lower() != 'yes':
+        if restart.lower() == 'no':
             break
+        # by default it would restart and if yes restart
 
 
 if __name__ == "__main__":
     main()
+
+
+# [{"Unnamed: 0":1423854,"Start Time":1498230572000,"End Time":1498230893000,"Trip Duration":321,"Start Station":"Wood St & Hubbard St","End Station":"Damen Ave & Chicago Ave","User Type":"Subscriber","Gender":"Male","Birth Year":1992.0,"start_month":6,"start_day_of_week":5,"end_month":6,"end_day_of_week":5,"duration":321},
+# {"Unnamed: 0":955915,"Start Time":1495736343000,"End Time":1495737953000,"Trip Duration":1610,"Start Station":"Theater on the Lake","End Station":"Sheffield Ave & Waveland Ave","User Type":"Subscriber","Gender":"Female","Birth Year":1992.0,"start_month":5,"start_day_of_week":4,"end_month":5,"end_day_of_week":4,"duration":1610},
+# {"Unnamed: 0":9031,"Start Time":1483518469000,"End Time":1483518885000,"Trip Duration":416,"Start Station":"May St & Taylor St","End Station":"Wood St & Taylor St","User Type":"Subscriber","Gender":"Male","Birth Year":1981.0,"start_month":1,"start_day_of_week":3,"end_month":1,"end_day_of_week":3,"duration":416}]
